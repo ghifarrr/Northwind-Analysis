@@ -4,11 +4,11 @@ The Northwind database is a sample database that was originally created by Micro
 ## Dataset
 The Northwind dataset includes sample data for the following.
 
-Regions and Territories : Territory ID based on regions
-Suppliers: Suppliers and vendors of Northwind
-Customers: Customers who buy products from Northwind
-Employees: Employee details of Northwind traders
-Employee Territories : Employee based on their Territory ID
-Products: Product information
-Shippers: The details of the shippers who ship the products from the traders to the end-customers
-Orders and Order_Details: Sales Order transactions taking place between the customers & the company
+- Regions and Territories : Territory ID based on regions
+- Suppliers: Suppliers and vendors of Northwind
+- Customers: Customers who buy products from Northwind
+- Employees: Employee details of Northwind traders
+- Employee Territories : Employee based on their Territory ID
+- Products: Product information
+- Shippers: The details of the shippers who ship the products from the traders to the end-customers
+- Orders and Order_Details: Sales Order transactions taking place between the customers & the company
