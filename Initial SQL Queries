@@ -75,6 +75,7 @@ FROM
   `graphic-jet-399507.Northwind.Orders`
 WHERE
   MOD(OrderID,2)=1;
+
 ##11.Create a report that shows all the orders where the freight cost more than $500.
 SELECT
   *
@@ -82,6 +83,7 @@ FROM
   `graphic-jet-399507.Northwind.Orders`
 WHERE
   freight >= 500;
+
 ##12.Create a report that showsthe CustomerID,sum of Freight, from the orders table with sum of freight greater $200, grouped by CustomerID. HINT: you will need to use a Groupby and a Having statement.
 SELECT
   customerID,
@@ -92,6 +94,7 @@ GROUP BY
   customerID
 HAVING
   SUM(freight) >=200;
+
 ##13.Create a report that shows the OrderID, ProductID, OrderDate, ContactName, UnitPrice, Quantity, Discount from the order details, orders and customers table with discount (shows as percentage) given morethan or equal 10% on every purchase. Sorted by discount in descending order
 SELECT
   ords.orderID,
@@ -115,6 +118,7 @@ WHERE
   odt.discount >= 0.1
 ORDER BY
   odt.discount DESC;
+
 ##14. Create a view named CustomerInfo that shows the CustomerID, CompanyName, ContactName, ContactTitle, Address, City,Country, OrderDate, RequiredDate, ShippedDate from the orders and customers table.
 CREATE VIEW
   graphic-jet-399507.Northwind.CustomerInfo AS
@@ -134,6 +138,7 @@ JOIN
   `graphic-jet-399507.Northwind.Customers` AS cust
 ON
   ords.customerID = cust.CustomerID;
+
 ##15.Create a report to get the average amount of cost freight per month and year, use OrderDate column (Please use the start date from 2013-2015) HINT: you will need to use a Groupby and Sorted by freight
 SELECT
   EXTRACT(YEAR
@@ -156,6 +161,7 @@ GROUP BY
   2
 ORDER BY
   3 ASC;
+
 ##16.Create a report to get total revenue in 2015, when total_revenue is revenue that reduced by discount (Please use the start date 2015)
 CREATE VIEW
   graphic-jet-399507.Northwind.RevenueInfo AS
@@ -186,6 +192,7 @@ GROUP BY
   6
 ORDER BY
   7 ASC;
+
 ##17.Create a report to get the fullname, age of the employees, and long years in Company, for each employee. Assume this year is 2015 (Output== ID, Fullname, Age, YearsInCompany)
   UPDATE 
  `graphic-jet-399507.Northwind.Employees` emp
