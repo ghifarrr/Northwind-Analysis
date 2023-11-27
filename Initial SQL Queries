@@ -1,0 +1,341 @@
+ --1. Create a report that shows the capitalized FirstName and capitalized LastName renamed as FirstName and Lastname respectively and HireDate from the employees table sorted from the newest to the oldest employee.
+SELECT SUBSTRING(FirstName,1,1) FirstName, SUBSTRING(LastName,1,1) LastName, HireDate
+FROM `graphic-jet-399507.Northwind.Employees` AS Employees
+Order BY HireDate DESC;
+
+--2.Replace USA to United States and Create a report showing FirstName, LastName, Country from the employees not from United States.
+UPDATE `graphic-jet-399507.Northwind.Employees` AS Employees  
+SET Country = 'United States'
+WHERE Country = 'USA';
+
+SELECT FirstName, LastName, Country
+FROM `graphic-jet-399507.Northwind.Employees` AS Employees
+WHERE Country NOT IN ('United States');
+ ------------- 
+##3. Create a report that shows the CategoryName and Description from the categories table sorted by CategoryName
+SELECT
+  Categories.CategoryName AS CategoryName,
+  Categories.Description AS Description
+FROM
+  graphic-jet-399507.Northwind.Categories AS Categories
+ORDER BY
+  Categories.CategoryName ASC;
+ ------------- 
+ ##4. Create a query that replace Name of ColumnsALTER TABLE `graphic-jet-399507.Northwind.Customers`
+RENAME COLUMN string_field_0 TO CustomerID;
+ALTER TABLE `graphic-jet-399507.Northwind.Customers`
+RENAME COLUMN string_field_1 TO CompanyName;
+ALTER TABLE `graphic-jet-399507.Northwind.Customers`
+RENAME COLUMN string_field_2 TO ContactName;
+ALTER TABLE `graphic-jet-399507.Northwind.Customers`
+RENAME COLUMN string_field_3 TO ContactTitle;
+ALTER TABLE `graphic-jet-399507.Northwind.Customers`
+RENAME COLUMN string_field_4 TO City;
+ALTER TABLE `graphic-jet-399507.Northwind.Customers`
+RENAME COLUMN string_field_5 TO Country;
+
+##5. Create a report that shows the ContactName, CompanyName, ContactTitle and Phone number from the customers table sorted by Phone
+SELECT Customers.ContactName, Customers.CompanyName, Customers.ContactTitle
+FROM
+  `graphic-jet-399507.Northwind.Customers` as Customers
+Order BY CompanyName ASC;
+
+##6. Create a report that shows all the CustomerID in lowercase letter and renamed as ID from the customers table.
+Select LOWER(CustomerID) ID
+From `graphic-jet-399507.Northwind.Customers` as Customers;
+
+##7. Create a report showing all the ContactName, Address, City of all customers not from Germany, Mexico, Spain
+SELECT ContactName, CustomerID, City
+FROM `graphic-jet-399507.Northwind.Customers` as Customers
+WHERE Country NOT IN ('Germany','Mexico','Spain');
+
+##8. Create a report that shows CompanyName, ContactName of all customers from ‘Buenos Aires' only.
+SELECT CompanyName, ContactName
+From `graphic-jet-399507.Northwind.Customers` as Customers
+WHERE City = 'Buenos Aires';
+ ------------- 
+##9.Create a report that shows the top 10 OrderID, OrderDate, ShippedDate, CustomerID, Freight from the orders table sorted by Freight in descending order.
+SELECT
+  OrderID,
+  OrderDate,
+  ShippedDate,
+  CustomerID,
+  Freight
+FROM
+  `graphic-jet-399507.Northwind.Orders`
+ORDER BY
+  Freight DESC
+LIMIT
+  10;
+  
+##10.Create a report showing all the odd numbers of OrderID from the orders table.
+SELECT
+  *
+FROM
+  `graphic-jet-399507.Northwind.Orders`
+WHERE
+  MOD(OrderID,2)=1;
+##11.Create a report that shows all the orders where the freight cost more than $500.
+SELECT
+  *
+FROM
+  `graphic-jet-399507.Northwind.Orders`
+WHERE
+  freight >= 500;
+##12.Create a report that showsthe CustomerID,sum of Freight, from the orders table with sum of freight greater $200, grouped by CustomerID. HINT: you will need to use a Groupby and a Having statement.
+SELECT
+  customerID,
+  SUM(freight) TotalofFreight
+FROM
+  `graphic-jet-399507.Northwind.Orders`
+GROUP BY
+  customerID
+HAVING
+  SUM(freight) >=200;
+##13.Create a report that shows the OrderID, ProductID, OrderDate, ContactName, UnitPrice, Quantity, Discount from the order details, orders and customers table with discount (shows as percentage) given morethan or equal 10% on every purchase. Sorted by discount in descending order
+SELECT
+  ords.orderID,
+  odt.productID,
+  ords.orderDate,
+  cust.ContactName,
+  odt.unitprice,
+  odt.quantity,
+  (odt.discount*100) AS discountPercentage
+FROM
+  `graphic-jet-399507.Northwind.Orders` AS ords
+JOIN
+  `graphic-jet-399507.Northwind.Order Details` AS odt
+ON
+  ords.orderID = odt.orderID
+JOIN
+  `graphic-jet-399507.Northwind.Customers` AS cust
+ON
+  ords.customerID = cust.CustomerID
+WHERE
+  odt.discount >= 0.1
+ORDER BY
+  odt.discount DESC;
+##14. Create a view named CustomerInfo that shows the CustomerID, CompanyName, ContactName, ContactTitle, Address, City,Country, OrderDate, RequiredDate, ShippedDate from the orders and customers table.
+CREATE VIEW
+  graphic-jet-399507.Northwind.CustomerInfo AS
+SELECT
+  ords.customerID,
+  cust.CompanyName,
+  cust.ContactName,
+  cust.ContactTitle,
+  cust.City,
+  cust.Country,
+  ords.orderDate,
+  ords.requiredDate,
+  ords.shippedDate
+FROM
+  `graphic-jet-399507.Northwind.Orders` ords
+JOIN
+  `graphic-jet-399507.Northwind.Customers` AS cust
+ON
+  ords.customerID = cust.CustomerID;
+##15.Create a report to get the average amount of cost freight per month and year, use OrderDate column (Please use the start date from 2013-2015) HINT: you will need to use a Groupby and Sorted by freight
+SELECT
+  EXTRACT(YEAR
+  FROM
+    orderDate) AS Year,
+  EXTRACT(MONTH
+  FROM
+    orderDate) AS Month,
+  AVG(freight) AS average_freight
+FROM
+  `graphic-jet-399507.Northwind.Orders` ords
+WHERE
+  EXTRACT(YEAR
+  FROM
+    orderDate) IN (2013,
+    2014,
+    2015)
+GROUP BY
+  1,
+  2
+ORDER BY
+  3 ASC;
+##16.Create a report to get total revenue in 2015, when total_revenue is revenue that reduced by discount (Please use the start date 2015)
+CREATE VIEW
+  graphic-jet-399507.Northwind.RevenueInfo AS
+SELECT
+  ords.orderID,
+  ords.customerID,
+  od.productID,
+  od.unitPrice,
+  od.quantity,
+  od.discount,
+  (od.unitPrice*od.quantity-(od.unitPrice*od.quantity*od.discount)) AS total_revenue
+FROM
+  `graphic-jet-399507.Northwind.Orders` ords
+JOIN
+  `graphic-jet-399507.Northwind.Order Details` od
+ON
+  ords.orderID = od.orderID
+WHERE
+  EXTRACT(YEAR
+  FROM
+    orderDate) IN (2015)
+GROUP BY
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+ORDER BY
+  7 ASC;
+##17.Create a report to get the fullname, age of the employees, and long years in Company, for each employee. Assume this year is 2015 (Output== ID, Fullname, Age, YearsInCompany)
+  UPDATE 
+ `graphic-jet-399507.Northwind.Employees` emp
+SET 
+ emp.BirthDate = SUBSTR(emp.BirthDate, 1, INSTR(emp.BirthDate, ' ')-1)
+WHERE 
+ emp.EmployeeID IN (2,3,4,5,6,7,8,9);
+
+ UPDATE 
+ `graphic-jet-399507.Northwind.Employees` emp
+SET 
+ emp.HireDate = SUBSTR(emp.HireDate, 1, INSTR(emp.HireDate, ' ')-1)
+WHERE 
+ emp.EmployeeID IN (1,2,3,4,5,6,7,8,9);
+
+SELECT PARSE_DATE('%Y-%m-%d', emp.BirthDate) AS BirthDate
+FROM `graphic-jet-399507.Northwind.Employees` emp;
+
+WITH EmployeeOrderYears AS (
+  SELECT
+      DISTINCT emp.EmployeeID,
+      CONCAT(emp.FirstName," ",emp.LastName) AS Fullname,
+      DATE_DIFF(ord.OrderDate,PARSE_DATE('%Y-%m-%d',emp.BirthDate),YEAR) AS Age,
+      EXTRACT(YEAR FROM MAX(DATE(ord.OrderDate))) AS LastOrderYear,
+      DATE_DIFF(ord.OrderDate,PARSE_DATE('%Y-%m-%d',emp.HireDate),YEAR) AS YearsInCompany,
+      ROW_NUMBER() OVER (PARTITION BY emp.EmployeeID ORDER BY MAX(DATE (ord.OrderDate)) DESC) AS RowNum
+  FROM
+      `graphic-jet-399507.Northwind.Employees` emp
+  JOIN
+      `graphic-jet-399507.Northwind.Orders` ord
+  ON
+      emp.EmployeeID = ord.employeeID
+  GROUP BY
+      1,
+      2,
+      ord.orderDate,
+      emp.BirthDate,
+      emp.HireDate
+)SELECT
+  EmployeeID,
+  Fullname,
+  Age,
+  LastOrderYear,
+  YearsInCompany
+FROM
+  EmployeeOrderYears
+WHERE
+  RowNum = 1
+ORDER BY
+  YearsInCompany DESC;
+  
+##18.Display latest departure trip of ship in each orderID and employeeID, add a column of the difference between the day of departure of the product and the day of the order is, and add a column that have a description how good duration from order to shipped. with detail below: order_id, employeeID, shipperID, companyName, DurationDaysofShipped, freight, and Shippeddescription
+WITH ShippedRate AS (
+  SELECT
+      ord.orderID,
+      ord.employeeID,
+      ord.shipperID,
+      ship.CompanyName,
+      DATE_DIFF(ord.shippedDate,ord.orderDate,DAY) AS DurationDaysofShipped,
+      ord.freight,
+      CASE 
+        WHEN DATE_DIFF(ord.shippedDate,ord.orderDate,DAY) >= 7 THEN 'Shipped Under Average Duration'
+        WHEN DATE_DIFF(ord.shippedDate,ord.orderDate,DAY) BETWEEN 5 AND 7 THEN 'Shipped on Normal Duration'
+        WHEN DATE_DIFF(ord.shippedDate,ord.orderDate,DAY) BETWEEN 0 AND 5 THEN 'Shipped on Fast Duration'
+      END AS Shippeddescription
+  FROM
+      `graphic-jet-399507.Northwind.Orders` ord
+  JOIN
+      `graphic-jet-399507.Northwind.Shippers` ship
+  ON
+      ord.shipperID = ship.shipperID
+  GROUP BY
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+)SELECT
+  orderID,
+  employeeID,
+  shipperID,
+  CompanyName,
+  DurationDaysofShipped,
+  freight,
+  Shippeddescription
+FROM
+  ShippedRate
+ORDER BY
+  freight DESC;
+
+##19.Create a query to get Total Orders by Month of order in each Country, breakdown by EmployeeID. Use timeframe in 2015 (Output: EmployeeID, Full Name, Order Date in date format, Country Name, Total Orders in cumulative)
+
+WITH OrdersPerEmployee AS (
+  SELECT
+      ord.employeeID,
+      CONCAT(emp.FirstName," ",emp.LastName) AS Fullname,
+      FORMAT_DATE('%m',ord.orderDate) orderDate,
+      emp.Country,
+      COUNT(ord.employeeID) TotalOrders
+  FROM
+      `graphic-jet-399507.Northwind.Orders` ord
+  JOIN
+      `graphic-jet-399507.Northwind.Employees` emp
+  ON
+      ord.employeeID = emp.EmployeeID
+  WHERE EXTRACT(YEAR FROM ord.orderDate) = 2015
+  GROUP BY
+      1,
+      2,
+      3,
+      4
+)
+SELECT
+  employeeID,
+  FullName,
+  orderDate,
+  Country,
+  TotalOrders
+FROM
+  OrdersPerEmployee
+ORDER BY
+  1 ASC;
+
+##20. Find monthly growth of revenue in percentage for each country, ordered by time descendingly. Please use the date 2014 (Output: Month, Country, GrowthRevenue(%) )
+WITH GrowthOrder AS(
+  SELECT 
+    FORMAT_DATE('%y/%m',ord.orderDate) Month,
+    cust.Country Country,
+    SUM(rev.total_revenue) TotalRevenue
+  FROM
+      `graphic-jet-399507.Northwind.Orders` ord
+  JOIN
+      `graphic-jet-399507.Northwind.Customers` cust
+  ON
+      ord.customerID = cust.CustomerID
+  JOIN
+      `graphic-jet-399507.Northwind.RevenueInfo` rev
+  ON
+      cust.CustomerID = rev.customerID
+  WHERE EXTRACT(YEAR FROM ord.orderDate) = 2014
+  GROUP BY
+      1,
+      2
+)
+SELECT
+  Month,
+  Country,
+  CONCAT(ROUND(((TotalRevenue - (LAG(TotalRevenue)OVER(PARTITION BY Country ORDER BY Month)))/(LAG(TotalRevenue)OVER(PARTITION BY Country ORDER BY Month))*100),2),'%') GrowthRevenue
+FROM GrowthOrder
+ORDER BY 1 DESC,2 ASC;
+
